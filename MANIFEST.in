@@ -1,0 +1,2 @@
+recursive-include src/mechkey/assets *
+include LICENSE README.md CONTRIBUTING.md
