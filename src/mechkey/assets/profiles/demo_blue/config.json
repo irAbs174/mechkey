@@ -1,0 +1,14 @@
+{
+  "id": "demo_blue",
+  "name": "Demo Blue (clicky)",
+  "author": "mechkey",
+  "license": "Apache-2.0",
+  "default": "generic.wav",
+  "sound": "press.wav",
+  "keyup_sound": "release.wav",
+  "defines": {
+    "enter": "enter.wav",
+    "space": "space.wav",
+    "backspace": "backspace.wav"
+  }
+}
