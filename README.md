@@ -1,5 +1,7 @@
 # mechkey
 
+![mechkey](tump.jpg)
+
 Mechanical keyboard sound simulator for Python. Play realistic switch samples on every keystroke with a global keyboard listener.
 
 ## Features
