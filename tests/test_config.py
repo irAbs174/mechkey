@@ -10,7 +10,7 @@ from mechkey.config import Config, load_config, save_config, update_config
 def test_load_config_defaults_when_missing(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
     config = load_config()
-    assert config.profile == "demo_blue"
+    assert config.profile == "cherry_mx_brown"
     assert config.volume == 70
     assert config.play_release is True
     assert config.mute_hotkey == "ctrl+alt+m"

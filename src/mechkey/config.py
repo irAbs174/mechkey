@@ -20,7 +20,7 @@ else:
 class Config:
     """Runtime settings persisted to TOML."""
 
-    profile: str = "demo_blue"
+    profile: str = "cherry_mx_brown"
     volume: int = 70
     play_release: bool = True
     mute_hotkey: str = "ctrl+alt+m"
@@ -28,7 +28,7 @@ class Config:
     def normalized(self) -> Config:
         volume = max(0, min(100, int(self.volume)))
         return Config(
-            profile=self.profile.strip() or "demo_blue",
+            profile=self.profile.strip() or "cherry_mx_brown",
             volume=volume,
             play_release=bool(self.play_release),
             mute_hotkey=self.mute_hotkey.strip().lower() or "ctrl+alt+m",

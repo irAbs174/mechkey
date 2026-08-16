@@ -34,6 +34,29 @@ def _profile_roots() -> list[Path]:
     return roots
 
 
+def _parse_defines(
+    defines_raw: dict,
+    key_define_type: str,
+    config_file: Path,
+) -> dict[str, str | tuple[int, int]]:
+    defines: dict[str, str | tuple[int, int]] = {}
+    for key, value in defines_raw.items():
+        key_id = str(key).lower()
+        if value is None:
+            continue
+        if key_define_type == "single":
+            if isinstance(value, (list, tuple)) and len(value) >= 2:
+                defines[key_id] = (int(value[0]), int(value[1]))
+            else:
+                raise ProfileError(
+                    f"Sprite define for '{key_id}' must be [start_ms, duration_ms] "
+                    f"in {config_file}"
+                )
+        else:
+            defines[key_id] = str(value)
+    return defines
+
+
 def _load_from_directory(directory: Path) -> Profile:
     config_file = directory / "config.json"
     if not config_file.is_file():
@@ -50,9 +73,22 @@ def _load_from_directory(directory: Path) -> Profile:
     if not isinstance(defines_raw, dict):
         raise ProfileError(f"'defines' must be an object in {config_file}")
 
-    defines = {str(k).lower(): str(v) for k, v in defines_raw.items()}
+    key_define_type = str(raw.get("key_define_type") or "multi").lower()
+    if key_define_type not in {"single", "multi"}:
+        raise ProfileError(
+            f"'key_define_type' must be 'single' or 'multi' in {config_file}"
+        )
+
+    defines = _parse_defines(defines_raw, key_define_type, config_file)
     keyup = raw.get("keyup_sound")
     release_sound = None if keyup in (None, "", False) else str(keyup)
+
+    if key_define_type == "single":
+        press_sound = str(raw.get("sound") or "sound.wav")
+        default_sound = str(raw.get("default") or press_sound)
+    else:
+        default_sound = str(raw.get("default") or "generic.wav")
+        press_sound = str(raw.get("sound") or raw.get("default") or "press.wav")
 
     return Profile(
         id=profile_id,
@@ -60,8 +96,9 @@ def _load_from_directory(directory: Path) -> Profile:
         directory=directory,
         author=str(raw.get("author") or ""),
         license=str(raw.get("license") or ""),
-        default_sound=str(raw.get("default") or "generic.wav"),
-        press_sound=str(raw.get("sound") or raw.get("default") or "press.wav"),
+        key_define_type=key_define_type,
+        default_sound=default_sound,
+        press_sound=press_sound,
         release_sound=release_sound,
         defines=defines,
     )

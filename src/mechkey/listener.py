@@ -12,24 +12,113 @@ KeyHandler = Callable[[str], None]
 ReleaseHandler = Callable[[], None]
 HotkeyHandler = Callable[[], None]
 
+# Mechvibes / iohook-style keycodes (US QWERTY).
+_CHAR_TO_KEYCODE = {
+    "a": "30",
+    "b": "48",
+    "c": "46",
+    "d": "32",
+    "e": "18",
+    "f": "33",
+    "g": "34",
+    "h": "35",
+    "i": "23",
+    "j": "36",
+    "k": "37",
+    "l": "38",
+    "m": "50",
+    "n": "49",
+    "o": "24",
+    "p": "25",
+    "q": "16",
+    "r": "19",
+    "s": "31",
+    "t": "20",
+    "u": "22",
+    "v": "47",
+    "w": "17",
+    "x": "45",
+    "y": "21",
+    "z": "44",
+    "1": "2",
+    "2": "3",
+    "3": "4",
+    "4": "5",
+    "5": "6",
+    "6": "7",
+    "7": "8",
+    "8": "9",
+    "9": "10",
+    "0": "11",
+    "-": "12",
+    "=": "13",
+    "[": "26",
+    "]": "27",
+    "\\": "43",
+    ";": "39",
+    "'": "40",
+    "`": "41",
+    ",": "51",
+    ".": "52",
+    "/": "53",
+    " ": "57",
+}
+
+_SPECIAL_TO_KEYCODE = {
+    keyboard.Key.esc: "1",
+    keyboard.Key.backspace: "14",
+    keyboard.Key.tab: "15",
+    keyboard.Key.enter: "28",
+    keyboard.Key.caps_lock: "58",
+    keyboard.Key.space: "57",
+    keyboard.Key.f1: "59",
+    keyboard.Key.f2: "60",
+    keyboard.Key.f3: "61",
+    keyboard.Key.f4: "62",
+    keyboard.Key.f5: "63",
+    keyboard.Key.f6: "64",
+    keyboard.Key.f7: "65",
+    keyboard.Key.f8: "66",
+    keyboard.Key.f9: "67",
+    keyboard.Key.f10: "68",
+    keyboard.Key.f11: "87",
+    keyboard.Key.f12: "88",
+    keyboard.Key.insert: "3666",
+    keyboard.Key.delete: "3667",
+    keyboard.Key.home: "3655",
+    keyboard.Key.end: "3663",
+    keyboard.Key.page_up: "3657",
+    keyboard.Key.page_down: "3665",
+    keyboard.Key.up: "57416",
+    keyboard.Key.left: "57419",
+    keyboard.Key.right: "57421",
+    keyboard.Key.down: "57424",
+    keyboard.Key.num_lock: "69",
+    keyboard.Key.scroll_lock: "70",
+    keyboard.Key.print_screen: "3639",
+    keyboard.Key.pause: "3653",
+    keyboard.Key.menu: "3677",
+}
+
 
 def key_to_id(key: Any) -> str:
-    """Map a pynput key to a logical sound id."""
+    """Map a pynput key to a Mechvibes/iohook keycode string."""
     if isinstance(key, keyboard.KeyCode):
         char = key.char
-        if char is not None and char.isprintable():
-            return "generic"
-        return "generic"
+        if char is not None:
+            mapped = _CHAR_TO_KEYCODE.get(char.lower())
+            if mapped is not None:
+                return mapped
+        # Fallback: use vk when available (platform-specific).
+        vk = getattr(key, "vk", None)
+        if vk is not None:
+            return str(int(vk))
+        return "30"  # generic letter fallback (A)
 
-    special_map = {
-        keyboard.Key.enter: "enter",
-        keyboard.Key.space: "space",
-        keyboard.Key.backspace: "backspace",
-        keyboard.Key.tab: "generic",
-        keyboard.Key.esc: "generic",
-        keyboard.Key.delete: "backspace",
-    }
-    return special_map.get(key, "generic")
+    mapped = _SPECIAL_TO_KEYCODE.get(key)
+    if mapped is not None:
+        return mapped
+    return "30"
 
 
 def parse_hotkey(spec: str) -> set[str]:
