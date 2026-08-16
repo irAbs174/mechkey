@@ -6,7 +6,7 @@ Mechanical keyboard sound simulator for Python. Play realistic switch samples on
 
 - System-wide key press / release sounds
 - Sample-based switch profiles (Mechvibes-style `config.json`)
-- Bundled license-safe **Demo Blue** clicky profile
+- Bundled **Cherry MX Brown** sprite profile (default) plus license-safe **Demo Blue**
 - User-installable custom profiles
 - Volume, mute hotkey, and persistent config (`~/.config/mechkey/config.toml`)
 
@@ -35,6 +35,7 @@ mechkey
 mechkey run
 
 # Choose a profile and volume for this session
+mechkey run --profile cherry_mx_brown --volume 80
 mechkey run --profile demo_blue --volume 80
 
 # Press sounds only
@@ -46,7 +47,7 @@ mechkey list-profiles
 # Config
 mechkey config show
 mechkey config set volume 60
-mechkey config set profile demo_blue
+mechkey config set profile cherry_mx_brown
 mechkey config set mute_hotkey ctrl+alt+m
 ```
 
@@ -71,7 +72,7 @@ User profiles go in:
   *.wav
 ```
 
-Example `config.json`:
+### Multi-file profile (`key_define_type: "multi"`)
 
 ```json
 {
@@ -79,6 +80,7 @@ Example `config.json`:
   "name": "My Switches",
   "author": "you",
   "license": "CC0-1.0",
+  "key_define_type": "multi",
   "default": "generic.wav",
   "sound": "press.wav",
   "keyup_sound": "release.wav",
@@ -86,6 +88,24 @@ Example `config.json`:
     "enter": "enter.wav",
     "space": "space.wav",
     "backspace": "backspace.wav"
+  }
+}
+```
+
+### Single-sprite profile (`key_define_type: "single"`)
+
+One master WAV plus millisecond slices per Mechvibes/iohook keycode:
+
+```json
+{
+  "id": "my_sprite",
+  "name": "My Sprite Pack",
+  "key_define_type": "single",
+  "sound": "sound.wav",
+  "keyup_sound": false,
+  "defines": {
+    "30": [1200, 180],
+    "57": [5400, 200]
   }
 }
 ```
@@ -98,14 +118,20 @@ User profiles with the same `id` override bundled ones.
 python3 scripts/generate_demo_profile.py
 ```
 
-The demo samples are synthesized (Apache-2.0). Drop in your own legally obtained WAVs for authentic switch recordings.
+### Re-import Cherry MX Brown from a local MP3
+
+```bash
+python3 scripts/import_cherry_mx_brown.py [path/to/cherry-mx-brown.mp3]
+```
+
+The demo samples are synthesized (Apache-2.0). The Cherry MX Brown pack is imported from a local recording — verify redistribution rights before publishing forks.
 
 ## Configuration
 
 `~/.config/mechkey/config.toml`:
 
 ```toml
-profile = "demo_blue"
+profile = "cherry_mx_brown"
 volume = 70
 play_release = true
 mute_hotkey = "ctrl+alt+m"

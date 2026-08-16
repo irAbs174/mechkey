@@ -14,7 +14,7 @@ pip install -e ".[dev]"
 
 - `src/mechkey/` — library and CLI
 - `src/mechkey/assets/profiles/` — bundled sound profiles
-- `scripts/` — maintenance utilities (demo sample generator)
+- `scripts/` — maintenance utilities (demo sample generator, sprite pack importer)
 - `tests/` — pytest suite
 
 ## Guidelines
@@ -38,6 +38,16 @@ If you change the synthesizer, regenerate assets:
 ```bash
 python3 scripts/generate_demo_profile.py
 ```
+
+## Cherry MX Brown profile
+
+Rebuild the default sprite profile from a local MP3 (requires `ffmpeg`):
+
+```bash
+python3 scripts/import_cherry_mx_brown.py cherry-mx-brown.mp3
+```
+
+Document license/attribution in that profile's `config.json` before redistributing.
 
 ## License
 
